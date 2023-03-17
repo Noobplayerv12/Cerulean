@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipe Cerulean</title>
+</head>
+<body>
+    <script>
+        var nomeCompleto = prompt("Digite seu nome completo:")
+        console.log(nomeCompletoFiltragem(nomeCompleto))
+        function nomeCompletoFiltragem(params = new String) {
+
+            params = params.split(" ")
+            let iniciais = ""
+            let primeiro = params[0]
+            let ultimo = params[params.length - 1]
+            // console.log(primeiro)
+            // console.log(ultimo)
+            // console.log(params)
+            if(params.length > 1){
+                iniciais = primeiro[0] + ultimo[0]
+            } else {
+                iniciais = primeiro[0] + "X"
+            }
+            return iniciais.toUpperCase()
+        }
+    </script>
+</body>
+</html>
