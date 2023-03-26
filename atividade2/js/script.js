@@ -25,7 +25,24 @@ botao.addEventListener("click", function(){
  })
  
  
- 
+ texto.addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        if(texto.value){
+            ul.classList.remove("d-none")
+            var li = document.createElement("li")
+            li.classList.add('list-group-item')
+            ul.appendChild(li).append(texto.value)
+           li.addEventListener("click", function(){
+               if(!li.classList.contains("active")){
+                   li.classList.add("active")
+               }else{
+                   li.classList.remove("active")
+               }
+           })
+           texto.value = ""
+       }
+    }
+ })
  
 
 
