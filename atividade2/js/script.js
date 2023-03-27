@@ -2,12 +2,13 @@ const botao = document.querySelector("#botao")
 const texto = document.querySelector("#texto")
 const ul = document.querySelector("ul")
 const li = document.querySelectorAll("li")
+const titulo_tarefas = document.querySelector("#titulo_tarefas")
 
 function cria_lista_de_tarefas(){
 
     if(texto.value){
 
-        ul.classList.remove("d-none")
+        titulo_tarefas.classList.remove("d-none")
         let li = document.createElement("li")
         li.classList.add('list-group-item')
         ul.insertBefore(li, ul.firstChild).append(texto.value)
