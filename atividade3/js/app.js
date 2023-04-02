@@ -1,100 +1,154 @@
 window.addEventListener("DOMContentLoaded", (event) => {
 
     const baseUrl = "https://parallelum.com.br/fipe/api/v1/"
-    const endpointMarcas = `${baseUrl}carros/marcas`
 
+    const veiculos = document.querySelectorAll("#vehicles_types li")
     const marcasList = document.querySelector("#vehicles_brand")
     const modeloList = document.querySelector("#vehicles_model")
     const anosList = document.querySelector("#vehicles_year")
-    buscar_preco = document.querySelector(".search_button")
-    modal_de_busca = document.querySelector(".modal")
-    fechar_modal = document.querySelector(".close")
+    let buscar_preco = document.querySelector(".search_button")
+    let modal_de_busca = document.querySelector(".modal")
+    let fechar_modal = document.querySelector(".close")
+    let endpointMarcas = ""
 
-    marcasList.removeAttribute("disabled")
-    fetch(endpointMarcas)
-        .then((res)=>{
-            
-            return res.json()
-            
-        }).then((data)=> {
 
-            data.map((marca)=>{
 
-                let listItem = document.createElement("option")
-                listItem.innerText = marca.nome
-                listItem.value = marca.codigo
-                marcasList.appendChild(listItem)
-        
-            })
-        })
-    
-    marcasList.addEventListener("change", function () {
+    veiculos.forEach((element) => {
+        if(element.classList.contains("active")){
+            endpointMarcas = `${baseUrl}${element.getAttribute('data-type')}/marcas`
+            marcasList.removeAttribute("disabled")
+            fetch(`${endpointMarcas}`).then((res) => {
 
-        modeloList.innerHTML = "";
-        anosList.innerHTML = "";
-        fetch(`${endpointMarcas}/${this.value}/modelos`)
-            .then((resp) => {
-
-                return resp.json()
+                return res.json()
 
             }).then((data) => {
-
-                modeloList.appendChild(document.createElement("option"))
-                data.modelos.map((modelo)=>{
-
+                marcasList.innerHTML = ""
+                marcasList.appendChild(document.createElement("option"))
+                data.map((marca) => {
+                    
                     let listItem = document.createElement("option")
-                    listItem.innerText = modelo.nome
-                    listItem.value = modelo.codigo
-                    modeloList.appendChild(listItem)
+                    listItem.innerText = marca.nome
+                    listItem.value = marca.codigo
+                    marcasList.appendChild(listItem)
 
                 })
-
             })
-            modeloList.removeAttribute("disabled")
+        }
+        element.addEventListener("click", function () {
+            veiculos.forEach(item => {
+                if (item.classList.contains("active")) {
+                    item.classList.remove("active")
+                    this.classList.add("active")
+                    endpointMarcas = `${baseUrl}${this.getAttribute('data-type')}/marcas`
+                    marcasList.removeAttribute("disabled")
+                    modeloList.setAttribute("disabled", true)
+                    anosList.setAttribute("disabled", true)
+                    fetch(`${endpointMarcas}`).then((res) => {
+
+                        return res.json()
+
+                    }).then((data) => {
+                        marcasList.innerHTML = ""
+                        modeloList.innerHTML = ""
+                        anosList.innerHTML = ""
+                        buscar_preco.setAttribute("disabled", true)
+                        marcasList.appendChild(document.createElement("option"))
+                        data.map((marca) => {
+                            
+                            let listItem = document.createElement("option")
+                            listItem.innerText = marca.nome
+                            listItem.value = marca.codigo
+                            marcasList.appendChild(listItem)
+
+                        })
+                    })
+                }
+            })
+        })
+    })
+
+
+
+    
+
+    marcasList.addEventListener("change", function () {
+
+        
+        if (marcasList.value!== "") {
+            modeloList.innerHTML = "";
+            anosList.innerHTML = "";
+            buscar_preco.setAttribute("disabled", true)
+            fetch(`${endpointMarcas}/${this.value}/modelos`)
+                .then((resp) => {
+
+                    return resp.json()
+
+                }).then((data) => {
+
+                    modeloList.appendChild(document.createElement("option"))
+                    data.modelos.map((modelo) => {
+
+                        let listItem = document.createElement("option")
+                        listItem.innerText = modelo.nome
+                        listItem.value = modelo.codigo
+                        modeloList.appendChild(listItem)
+
+                    })
+
+                })
+        modeloList.removeAttribute("disabled")
+        } else {
+            modeloList.setAttribute("disabled", true)
+            anosList.setAttribute("disabled", true)
+            buscar_preco.setAttribute("disabled", true)
+        }
     })
 
     modeloList.addEventListener("change", () => {
 
         anosList.innerHTML = "";
+        if (modeloList.value !== "") {
+            fetch(`${endpointMarcas}/${marcasList.value}/modelos/${modeloList.value}/anos`)
+                .then((resp) => {
+                    return resp.json()
+                }).then((data) => {
 
-        fetch(`${endpointMarcas}/${marcasList.value}/modelos/${modeloList.value}/anos`)
-            .then((resp) => {
-                return resp.json()
-            }).then((data) => {
+                    anosList.appendChild(document.createElement("option"))
 
-                anosList.appendChild(document.createElement("option"))
-                
 
-                data.map((anos)=>{
-                    let listItem = document.createElement("option")
-                    listItem.innerText = anos.nome
-                    listItem.value = anos.codigo
-                    anosList.appendChild(listItem)
-                   
+                    data.map((anos) => {
+                        let listItem = document.createElement("option")
+                        listItem.innerText = anos.nome
+                        listItem.value = anos.codigo
+                        anosList.appendChild(listItem)
+
+                    })
+
                 })
 
-            })
-
-           anosList.removeAttribute("disabled")
-          
-    })  
-
-    anosList.addEventListener("change", function(){
-        
-    buscar_preco.classList.add("search_button_show")
-    
-       
+            anosList.removeAttribute("disabled")
+        } else {
+            anosList.setAttribute("disabled", true)
+            buscar_preco.setAttribute("disabled", true)
+        }
     })
 
-    buscar_preco.addEventListener("click", function(){
-        modal_de_busca.classList.remove("hide_modal")
-        
+    anosList.addEventListener("change", function () {
+        buscar_preco.removeAttribute("disabled")
+        buscar_preco.classList.add("search_button_show")
+
     })
-    
-    fechar_modal.addEventListener("click", function(){
-        window.location.reload()
+
+    buscar_preco.addEventListener("click", function () {
+        if (!buscar_preco.attributes.getNamedItem("disabled")) {
+            modal_de_busca.classList.remove("hide_modal")
+        }
     })
-    
- 
+
+    fechar_modal.addEventListener("click", function () {
+        modal_de_busca.classList.add("hide_modal")
+    })
+
+
 
 });
