@@ -6,8 +6,8 @@ window.addEventListener("DOMContentLoaded", (event) => {
     const marcasList = document.querySelector("#vehicles_brand")
     const modeloList = document.querySelector("#vehicles_model")
     const anosList = document.querySelector("#vehicles_year")
-    let buscar_preco = document.querySelector(".search_button")
     let modal_de_busca = document.querySelector(".modal")
+    let buscar_preco = document.querySelector(".search_button")
     let fechar_modal = document.querySelector(".close")
     let endpointMarcas = ""
 
@@ -82,10 +82,11 @@ listar_modelos()
         marcasList.addEventListener("change", function () {
             modeloList.innerHTML = "";
             anosList.innerHTML = "";
-        
+            buscar_preco.classList.add("hide")
+            anosList.setAttribute("disabled", true)
+            
             if (marcasList.value!== "") {
-                modeloList.innerHTML = "";
-                anosList.innerHTML = "";
+
                 buscar_preco.setAttribute("disabled", true)
                 fetch(`${endpointMarcas}/${this.value}/modelos`)
                     .then((resp) => {
@@ -117,7 +118,11 @@ listar_modelos()
 
     function listar_modelos(){
         modeloList.addEventListener("change", () => {
+
+
             anosList.innerHTML = "";
+            buscar_preco.classList.add("hide")
+
             if (modeloList.value !== "") {
                 fetch(`${endpointMarcas}/${marcasList.value}/modelos/${modeloList.value}/anos`)
                     .then((resp) => {
@@ -144,20 +149,22 @@ listar_modelos()
             }
         })
     
-        anosList.addEventListener("change", function () {
-            buscar_preco.removeAttribute("disabled")
-            buscar_preco.classList.add("search_button_show")
-    
+        anosList.addEventListener("change", (event) => {
+            let anoVeiculo = event.currentTarget.value;
+            if(!anoVeiculo){
+                buscar_preco.classList.add("hide")
+                return;
+            }
+            buscar_preco.classList.remove("hide")
         })
 
     }
 
     
 
-    buscar_preco.addEventListener("click", function () {
-        if (!buscar_preco.attributes.getNamedItem("disabled")) {
-            modal_de_busca.classList.remove("hide_modal")
-        }
+    buscar_preco.addEventListener("click", (event) => {
+
+        modal_de_busca.classList.remove("hide_modal")
         fetch(`${endpointMarcas}/${marcasList.value}/modelos/${modeloList.value}/anos/${anosList.value}`)
                     .then((resp) => {
                         return resp.json()
