@@ -80,7 +80,8 @@ listar_modelos()
 
     function listar_marcas(){
         marcasList.addEventListener("change", function () {
-
+            modeloList.innerHTML = "";
+            anosList.innerHTML = "";
         
             if (marcasList.value!== "") {
                 modeloList.innerHTML = "";
@@ -116,7 +117,6 @@ listar_modelos()
 
     function listar_modelos(){
         modeloList.addEventListener("change", () => {
-
             anosList.innerHTML = "";
             if (modeloList.value !== "") {
                 fetch(`${endpointMarcas}/${marcasList.value}/modelos/${modeloList.value}/anos`)
