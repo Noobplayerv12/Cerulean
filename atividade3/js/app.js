@@ -37,6 +37,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         }
         element.addEventListener("click", function () {
             veiculos.forEach(item => {
+                buscar_preco.classList.add("hide")
                 if (item.classList.contains("active")) {
                     item.classList.remove("active")
                     this.classList.add("active")
